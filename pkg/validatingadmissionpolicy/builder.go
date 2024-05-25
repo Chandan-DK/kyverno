@@ -161,6 +161,7 @@ func constructValidatingAdmissionPolicyRules(discoveryClient dclient.IDiscovery,
 			if err != nil {
 				return err
 			}
+			fmt.Printf("Debug In VAP: %v", gvrss)
 			if len(gvrss) != 1 {
 				return fmt.Errorf("no unique match for kind %s", kind)
 			}
