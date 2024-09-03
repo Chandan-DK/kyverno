@@ -47,10 +47,7 @@ type resource struct {
 func (f resource) Apply(result v1alpha1.TestResult) bool {
 	if len(result.Resources) > 0 {
 		resource := result.Resources[0]
-		if wildcard.Match(f.value, resource) {
-			return true
-		}
-		return false
+		return wildcard.Match(f.value, resource)
 	}
 	if result.Resource == "" {
 		return true
