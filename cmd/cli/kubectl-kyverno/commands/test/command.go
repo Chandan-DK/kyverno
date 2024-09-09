@@ -108,7 +108,21 @@ func testCommandExecute(
 			// filter results
 			var filteredResults []v1alpha1.TestResult
 			for _, res := range test.Test.Results {
-				if filter.Apply(res) {
+				var matchedResources []string
+				if len(res.Resources) > 0 {
+					for _, resource := range res.Resources {
+						testResult := v1alpha1.TestResult{
+							Resources: []string{resource},
+						}
+						if filter.Apply(testResult) {
+							matchedResources = append(matchedResources, resource)
+						}
+					}
+					if len(matchedResources) > 0 {
+						res.Resources = matchedResources
+						filteredResults = append(filteredResults, res)
+					}
+				} else if filter.Apply(res) {
 					filteredResults = append(filteredResults, res)
 				}
 			}
