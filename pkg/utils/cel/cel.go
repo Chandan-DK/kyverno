@@ -27,8 +27,7 @@ func NewCompiler(
 	matchConditions []admissionregistrationv1.MatchCondition,
 	variables []admissionregistrationv1beta1.Variable,
 ) (*Compiler, error) {
-	env := environment.MustBaseEnvSet(environment.DefaultCompatibilityVersion(), false)
-	env.Extend(environment.VersionedOptions{
+	env, err := environment.MustBaseEnvSet(environment.DefaultCompatibilityVersion(), false).Extend(environment.VersionedOptions{
 		IntroducedVersion: version.MajorMinor(1, 0),
 		EnvOptions: []celgo.EnvOption{
 			library.JsonParseLib(),
