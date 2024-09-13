@@ -1,8 +1,11 @@
 package cel
 
 import (
+	celgo "github.com/google/cel-go/cel"
+	"github.com/kyverno/kyverno/pkg/engine/cel/library"
 	admissionregistrationv1 "k8s.io/api/admissionregistration/v1"
 	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
+	"k8s.io/apimachinery/pkg/util/version"
 	"k8s.io/apiserver/pkg/admission/plugin/cel"
 	"k8s.io/apiserver/pkg/admission/plugin/policy/validating"
 	"k8s.io/apiserver/pkg/admission/plugin/webhook/matchconditions"
@@ -24,7 +27,15 @@ func NewCompiler(
 	matchConditions []admissionregistrationv1.MatchCondition,
 	variables []admissionregistrationv1beta1.Variable,
 ) (*Compiler, error) {
-	compositedCompiler, err := cel.NewCompositedCompiler(environment.MustBaseEnvSet(environment.DefaultCompatibilityVersion(), false))
+	env := environment.MustBaseEnvSet(environment.DefaultCompatibilityVersion(), false)
+	env.Extend(environment.VersionedOptions{
+		IntroducedVersion: version.MajorMinor(1, 0),
+		EnvOptions: []celgo.EnvOption{
+			library.JsonParseLib(),
+		},
+	})
+
+	compositedCompiler, err := cel.NewCompositedCompiler(env)
 	if err != nil {
 		return nil, err
 	}
